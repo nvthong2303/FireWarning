@@ -3,11 +3,14 @@ const express = require('express')
 const mongoose = require('mongoose')
 const cors = require('cors')
 const bodyParser = require('body-parser')
+const userRoute = require('./src/router/user.router')
+const buildingRoute = require('./src/router/building.router')
 
 const app = express()
 const PORT = 3001;
+const MONGODB_URL = 'mongodb+srv://thong:thong@cluster0.vsp6k.mongodb.net/doankythuatmaytinh?retryWrites=true&w=majority'
 
-mongoose.connect(process.env.MONGODB_URL, {
+mongoose.connect(MONGODB_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 }).then(() => {
@@ -19,5 +22,8 @@ mongoose.connect(process.env.MONGODB_URL, {
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use(cors({ origin: '*' }))
+
+app.use('/', userRoute)
+app.use('/building', buildingRoute)
 
 app.listen(PORT, () => console.log(`server is running on port ${PORT}`))

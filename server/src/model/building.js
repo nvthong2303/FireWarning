@@ -7,6 +7,9 @@ const buildingSchema = mongoose.Schema({
     },
     sensor : {
         type: Array
+    },
+    warningThreshold: {
+        type: Number
     }
 })
 
