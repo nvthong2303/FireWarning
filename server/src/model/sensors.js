@@ -6,8 +6,12 @@ const sensorSchema = mongoose.Schema({
         required: true
     },
     data : {
-        type: Object
+        type: Number,
+        required: true
     }
+},
+{
+  timestamps: true
 })
 
 module.exports = mongoose.model('sensor', sensorSchema)

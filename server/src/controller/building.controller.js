@@ -15,15 +15,18 @@ const addBuilding = async (req, res) => {
 }
 
 const addSensor = async (req, res) => {
-    return 'add success'
+    await Building.findByIdAndUpdate(req.body.buildingID, { $push: { sensor: req.body.sensorID }})
+    return res.json(statusResponse.OK({ msg: 'add sensor building success' }));
 }
 
 const setThreshold = async (req, res) => {
-    return 'setting success'
+    await Building.findByIdAndUpdate(req.body.buildingID, { warningThreshold: req.body.warningThreshold })
+    return res.json(statusResponse.OK({ msg: 'update building success' }));
 }
 
 const getListBuilding = async (req, res) => {
-    return 'list building'
+    const listBuilding = await Building.find({});
+    return res.json(statusResponse.OK({ listBuilding }))
 }
 
 module.exports = {
