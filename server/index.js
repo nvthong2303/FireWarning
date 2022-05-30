@@ -5,6 +5,7 @@ const cors = require('cors')
 const bodyParser = require('body-parser')
 const userRoute = require('./src/router/user.router')
 const buildingRoute = require('./src/router/building.router')
+const sensorRoute = require('./src/router/sensor.router')
 
 const app = express()
 const PORT = 3001;
@@ -25,5 +26,6 @@ app.use(cors({ origin: '*' }))
 
 app.use('/', userRoute)
 app.use('/building', buildingRoute)
+app.use('/sensor', sensorRoute)
 
 app.listen(PORT, () => console.log(`server is running on port ${PORT}`))
