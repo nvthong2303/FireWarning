@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
     makeStyles,
-    TextField,
-    Typography,
+    Button,
     Table,
     TableBody,
     TableCell,
@@ -11,18 +10,12 @@ import {
     TableRow,
     Paper,
     IconButton,
-    Dialog,
-    DialogActions,
-    DialogTitle,
-    DialogContent,
-    DialogContentText,
-    Button,
-    Divider,
-    List,
-    ListItem,
-    ListItemText,
-    ListItemSecondaryAction
+    Typography
 } from '@material-ui/core';
+import { getListBuilding } from '../apis/building/building';
+import DialogBuilding from './DialogBuilding';
+import DialogAddBuilding from './DialogAddBuilding';
+import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -41,13 +34,15 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: '20px'
     },
     tableContainer: {
-        margin: '20px'
+        margin: '20px',
+        maxHeight: '550px'
     },
     table: {
         height: 'calc(100% - 100px)',
         width: '100%',
         padding: 10,
-        boxShadow: '-1px -2px 5px grey'
+        boxShadow: '-1px -2px 5px grey',
+        overflow: 'auto'
     },
     cellStickyRight: {
         position: 'sticky',
@@ -64,133 +59,46 @@ const useStyles = makeStyles((theme) => ({
         boxShadow: '-1px 0px 5px grey',
         width: 120
     },
+    header: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        marginRight: '20px',
+        marginLeft: '20px',
+    }
 }));
 
 export default function Config() {
     const classes = useStyles();
+    const { enqueueSnackbar } = useSnackbar();
+
     const [buildingSelected, setBuildingSelected] = useState();
     const [openDialogAction, setOpenDialogAction] = useState(false);
+    const [openDialogAdd, setOpenDialogAdd] = useState(false);
+    const token = localStorage.getItem('x_access_token');
 
-    const listSensors = [
-        {
-            id: '01',
-            name: 'MQ5-cảm biến khí gas, khí thân-2303',
-            createdAt: '2022-05-30T14:52:25.101+00:00',
-            updatedAt: '2022-05-30T14:52:56.811+00:00'
-        },
-        {
-            id: '10',
-            name: 'MQ5-cảm biến khí gas, khí thân-2704',
-            createdAt: '2022-05-30T14:52:25.101+00:00',
-            updatedAt: '2022-05-30T14:52:56.811+00:00'
-        },
-        {
-            id: '11',
-            name: 'MQ5-cảm biến khí gas, khí thân-1110',
-            createdAt: '2022-05-30T14:52:25.101+00:00',
-            updatedAt: '2022-05-30T14:52:56.811+00:00'
-        },
-        {
-            id: '12',
-            name: 'MQ5-cảm biến khí gas, khí thân-2000',
-            createdAt: '2022-05-30T14:52:25.101+00:00',
-            updatedAt: '2022-05-30T14:52:56.811+00:00'
-        },
-        {
-            id: '02',
-            name: 'MQ2-cảm biến khí gas',
-            createdAt: '2022-05-30T14:52:25.101+00:00',
-            updatedAt: '2022-05-30T14:52:56.811+00:00'
-        },
-        {
-            id: '03',
-            name: 'DHT11-cảm biến độ ẩm, nhiệt độ',
-            createdAt: '2022-05-30T14:52:25.101+00:00',
-            updatedAt: '2022-05-30T14:52:56.811+00:00'
-        },
-        {
-            id: '04',
-            name: 'MQ7-cảm biến khí CO',
-            createdAt: '2022-05-30T14:52:25.101+00:00',
-            updatedAt: '2022-05-30T14:52:56.811+00:00'
-        },
-        {
-            id: '05',
-            name: 'DS18B20-dây cảm biến nhiệt độ',
-            createdAt: '2022-05-30T14:52:25.101+00:00',
-            updatedAt: '2022-05-30T14:52:56.811+00:00'
-        },
-        {
-            id: '06',
-            name: 'LM393-cảm biến ánh sáng',
-            createdAt: '2022-05-30T14:52:25.101+00:00',
-            updatedAt: '2022-05-30T14:52:56.811+00:00'
-        },
-        {
-            id: '07',
-            name: 'MPU9255-cảm biến gia tốc góc',
-            createdAt: '2022-05-30T14:52:25.101+00:00',
-            updatedAt: '2022-05-30T14:52:56.811+00:00'
-        },
-        {
-            id: '08',
-            name: 'IR Infrared-cảm biến hồng ngoại',
-            createdAt: '2022-05-30T14:52:25.101+00:00',
-            updatedAt: '2022-05-30T14:52:56.811+00:00'
-        },
-        {
-            id: '09',
-            name: 'MQ8-cảm biến khói',
-            createdAt: '2022-05-30T14:52:25.101+00:00',
-            updatedAt: '2022-05-30T14:52:56.811+00:00'
-        },
-    ]
+    const [reloadBuilding, setReloadBuilding] = useState(false);
+    const [listBuilding, setListBuilding] = useState([]);
 
-    const rows = [
-        {
-            name: 'B1',
-            description: 'Trụ sở chính của đại học Công Nghệ Thông Tin, trường đại học Bách Khoa Hà Nội',
-            thresholdGas: 900,
-            thresholdCO: 900,
-            thresholdHumidity: 900,
-            sensors: ['01', '02', '03', '04']
-        },
-        {
-            name: 'B2',
-            description: 'Trụ sở chính của đại học Cơ Khí, trường đại học Bách Khoa Hà Nội',
-            thresholdGas: 780,
-            thresholdCO: 780,
-            thresholdHumidity: 780,
-            sensors: ['01', '02']
-        },
-        {
-            name: 'B3',
-            description: 'Trụ sở chính của đại học Điện Tử Viễn Thông, trường đại học Bách Khoa Hà Nội',
-            thresholdGas: 789,
-            thresholdCO: 789,
-            thresholdHumidity: 789,
-            sensors: ['01', '04']
-        },
-        {
-            name: 'B4',
-            description: 'Trụ sở chính của đại học Kinh Tế Quản Lý , trường đại học Bách Khoa Hà Nội',
-            thresholdGas: 900,
-            thresholdCO: 900,
-            thresholdHumidity: 900,
-            sensors: ['01', '03']
-        },
-        {
-            name: 'B5',
-            description: 'Trụ sở chính của đại học Điện - Tự Động Hóa, trường đại học Bách Khoa Hà Nội',
-            thresholdGas: 900,
-            thresholdCO: 900,
-            thresholdHumidity: 900,
-            sensors: ['01', '02', '04']
+    useEffect(() => {
+        callListBuilding();
+    }, [reloadBuilding]);
+
+    useEffect(() => {
+        if (listBuilding.length > 0) {
+            setBuildingSelected(listBuilding.find(a => a._id === buildingSelected?._id))
         }
-    ];
+    }, [JSON.stringify(listBuilding)]);
+
+    const callListBuilding = async () => {
+        const response = await getListBuilding(token);
+        if (response.status === 200) {
+            setListBuilding(response.data.data.listBuilding)
+        } else {
+            enqueueSnackbar('failed', { variant: 'error' });
+        }
+    }
 
     const handleOpenDialogAction = () => {
-        console.log('open')
         setOpenDialogAction(true);
     }
 
@@ -198,8 +106,29 @@ export default function Config() {
         setOpenDialogAction(false);
     }
 
+    const handleOpenDialogAdd = () => {
+        setOpenDialogAdd(true);
+    }
+
+    const handleCloseDialogAdd = () => {
+        console.log('aa')
+        setOpenDialogAdd(false);
+    }
+
     return (
         <div className={classes.container}>
+            <div className={classes.header}>
+                <Typography style={{ fontWeight: 700, fontSize: 20 }}>Quản lý Tòa nhà</Typography>
+                <Button 
+                    variant="contained" 
+                    color="primary"
+                    startIcon={<i className="fas fa-plus"></i>}
+                    style={{ fontWeight: 500 }}
+                    onClick={handleOpenDialogAdd}
+                >
+                    Thêm mới
+                </Button>
+            </div>
             <div className={classes.tableContainer}>
                 <TableContainer className={classes.table} component={Paper}>
                     <Table
@@ -261,16 +190,16 @@ export default function Config() {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {rows.map((row, index) => (
+                            {listBuilding.map((row, index) => (
                                 <TableRow key={index}>
                                     <TableCell width='5%' align="center">
                                         {index + 1}
                                     </TableCell>
-                                    <TableCell width="15%" align="left">{row.name}</TableCell>
+                                    <TableCell width="15%" align="left">{row.buildingName}</TableCell>
                                     <TableCell width="24%" align="left">{row.description}</TableCell>
-                                    <TableCell width="17%" align="center">{row.thresholdGas}</TableCell>
-                                    <TableCell width="17%" align="center">{row.thresholdCO}</TableCell>
-                                    <TableCell width="17%" align="center">{row.thresholdHumidity}</TableCell>
+                                    <TableCell width="17%" align="center">{row.warningThresholdGas}</TableCell>
+                                    <TableCell width="17%" align="center">{row.warningThresholdCO}</TableCell>
+                                    <TableCell width="17%" align="center">{row.warningThresholdHumidity}</TableCell>
                                     <TableCell
                                         align="center"
                                         width="10%"
@@ -279,7 +208,6 @@ export default function Config() {
                                         <IconButton
                                             aria-label="config"
                                             onClick={() => {
-                                                console.log('aaaaa')
                                                 setBuildingSelected(row);
                                                 handleOpenDialogAction();
                                             }}
@@ -293,126 +221,22 @@ export default function Config() {
                     </Table>
                 </TableContainer>
 
-                <Dialog
-                    open={openDialogAction}
-                    onClose={handleCloseDialogAction}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                >
-                    <DialogTitle id="alert-dialog-title">{`Cấu hình cho tòa nhà ${buildingSelected?.name}`}</DialogTitle>
-                    <DialogContent>
-                        <DialogContentText id="alert-dialog-description">
-                            Cấu hình ngưỡng cảnh báo cho tòa nhà. Khi các chỉ số đo được từ các cảm biến
-                            chạm ngưỡng đã được cấu hình thì sẽ có cảnh báo.
-                            <br />
-                            Hãy chắc chắn chỉ số của bạn là chính xác và hợp lý.
-                        </DialogContentText>
-                        <div className={classes.root} >
-                            <Typography
-                                variant='caption text'
-                                style={{ marginTop: '25px' }}
-                            >
-                                Ngưỡng cảnh báo khí Gas :
-                            </Typography>
-                            <TextField
-                                id="standard-basic"
-                                label="ThresHold Gas"
-                                type='number'
-                                defaultValue={buildingSelected?.thresholdGas}
-                            />
-                        </div>
-                        <div className={classes.root} >
-                            <Typography
-                                variant='caption text'
-                                style={{ marginTop: '25px' }}
-                            >
-                                Ngưỡng cảnh báo khí CO :
-                            </Typography>
-                            <TextField
-                                id="standard-basic"
-                                label="ThresHold CO"
-                                type='number'
-                                defaultValue={buildingSelected?.thresholdCO}
-                            />
-                        </div>
-                        <div className={classes.root} >
-                            <Typography
-                                variant='caption text'
-                                style={{ marginTop: '25px' }}
-                            >
-                                Ngưỡng cảnh báo khí độ ẩm :
-                            </Typography>
-                            <TextField
-                                id="standard-basic"
-                                label="ThresHold Humidity"
-                                type='number'
-                                defaultValue={buildingSelected?.thresholdHumidity}
-                            />
-                        </div>
-                        <Divider />
-                        <DialogContentText>
-                            Danh sách cảm biến của tòa nhà:
-                        </DialogContentText>
-                        <List>
-                            {listSensors.map(sensor => {
-                                if (buildingSelected?.sensors?.includes(sensor.id)) {
-                                    return (
-                                        <ListItem>
-                                            <ListItemText>
-                                                {sensor?.name}
-                                            </ListItemText>
-                                            <ListItemSecondaryAction>
-                                                <IconButton>
-                                                    <i className="fas fa-trash"></i>
-                                                </IconButton>
-                                            </ListItemSecondaryAction>
-                                        </ListItem>
-                                    )
-                                }
-                            })}
-                        </List>
-                        <Divider />
-                        <DialogContentText>
-                            Thêm cảm biến cho tòa nhà:
-                        </DialogContentText>
-                        <List>
-                            {listSensors.map(sensor => {
-                                if (!buildingSelected?.sensors?.includes(sensor.id)) {
-                                    return (
-                                        <ListItem>
-                                            <ListItemText>
-                                                {sensor?.name}
-                                            </ListItemText>
-                                            <ListItemSecondaryAction>
-                                                <IconButton>
-                                                <i className="fas fa-plus"></i>
-                                                </IconButton>
-                                            </ListItemSecondaryAction>
-                                        </ListItem>
-                                    )
-                                }
-                            })}
-                        </List>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button
-                            onClick={handleCloseDialogAction}
-                            variant="contained"
-                            color="secondary"
-                        >
-                            Hủy
-                        </Button>
-                        <Button
-                            onClick={handleCloseDialogAction}
-                            color="primary"
-                            variant="contained"
-                            autoFocus
-                        >
-                            Lưu
-                        </Button>
-                    </DialogActions>
-                </Dialog>
             </div>
+            {openDialogAction && (
+                <DialogBuilding
+                    buildingSelected={buildingSelected}
+                    openDialog={openDialogAction}
+                    handleCloseDialog={handleCloseDialogAction}
+                    setReload={() => setReloadBuilding(!reloadBuilding)}
+                />
+            )}
+            {openDialogAdd && (
+                <DialogAddBuilding
+                    openDialog={openDialogAdd}
+                    handleCloseDialog={handleCloseDialogAdd}
+                    setReload={() => setReloadBuilding(!reloadBuilding)}
+                /> 
+            )}
         </div>
     )
 }

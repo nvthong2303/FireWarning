@@ -3,14 +3,18 @@ import {
     Backdrop,
     makeStyles,
     CircularProgress,
-    Grid
+    Grid,
+    Typography
 } from '@material-ui/core';
 import SensorChart from './SensorChart';
 import { WiHumidity } from 'react-icons/wi';
 import { FaTemperatureHigh } from 'react-icons/fa';
 import { AiFillWarning } from "react-icons/ai";
-import * as apis from '../apis/sensor/index';
 import { data } from '../utils/mockData';
+import { getListBuilding } from '../apis/building/building';
+import { useSnackbar } from 'notistack';
+import PipeLine from './PipeLine';
+import GasBox from './GasBox';
 
 const useStyles = makeStyles((theme) => ({
     Backdrop: {
@@ -29,18 +33,36 @@ const useStyles = makeStyles((theme) => ({
     detail: {
         marginLeft: '20px',
         marginRight: '20px'
+    },
+    header: {
+        width: '100%',
+        height: '50px',
+        marginLeft: '20px',
+        display: 'flex',
+        justifyContent: 'flex-start',
+        alignItems: 'center'
     }
 }));
 
 export default function Main() {
-    const classes = useStyles();
+    const classes = useStyles();    
+    const { enqueueSnackbar } = useSnackbar();
+
     const [open, setOpen] = React.useState(false);
     const [dataChart, setDataChart] = React.useState([]);
     const [dataCH4, setDataCH4] = React.useState();
     const [dataCO, setDataCO] = React.useState();
 
+    const [listBuilding, setListBuilding] = React.useState([]);
+    const [buildingSelected, setBuildingSelected] = React.useState(listBuilding?.[0])
+
+
+    const token = localStorage.getItem('x_access_token');
+
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
     React.useEffect(async () => {
+        callListBuilding();
         setOpen(true);
         await getDataSensor();
         setOpen(false);
@@ -49,6 +71,15 @@ export default function Main() {
         //     await getDataSensor();
         // }, 10000)
     }, []);
+
+    const callListBuilding = async () => {
+        const response = await getListBuilding(token);
+        if (response.status === 200) {
+            setListBuilding(response.data.data.listBuilding)
+        } else {
+            enqueueSnackbar('failed', { variant: 'error' });
+        }
+    }
 
     function handleClose() {
         setOpen(false);
@@ -97,11 +128,18 @@ export default function Main() {
         setDataChart(dataChart);
         setDataCH4(response.data.sensors[response.data.sensors.length - 1].data.ch4);
         setDataCO(response.data.sensors[response.data.sensors.length - 1].data.co);
-        console.log(typeof dataCH4)
+    }
+
+    const handleSelectBuilding = (building) => {
+        setBuildingSelected(building);
     }
 
     return (
         <div className={classes.container}>
+            <div className={classes.header} onChange={(building) => handleSelectBuilding(building)}>
+                <Typography variant='OVERLINE TEXT'>Chọn tòa nhà :</Typography>
+                <PipeLine dataItems={listBuilding} onChange={handleSelectBuilding} />
+            </div>
             <Backdrop className={classes.Backdrop} open={open} onClick={handleClose}>
                 <CircularProgress color="inherit" />
             </Backdrop>
@@ -117,7 +155,8 @@ export default function Main() {
                         <WarningCOBox data={dataCO} />
                     </Grid>
                     <Grid item xs={4}>
-                        <WarningCH4Box data={dataCH4} />
+                        {/* <WarningCH4Box data={dataCH4} /> */}
+                        <GasBox />
                     </Grid>
                 </Grid>
             </div>

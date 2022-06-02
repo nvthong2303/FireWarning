@@ -52,8 +52,9 @@ function HomeHeader() {
   const open = Boolean(anchorElMenuUser);
 
     function logout(){
-        localStorage.setItem('x_acess_token', '');
-        localStorage.setItem('x_iot_user', '');
+        localStorage.removeItem('x_acess_token');
+        localStorage.removeItem('x_iot_user');
+        localStorage.removeItem('x_iot_isAdmin');
         window.location = '/login';
     }
 

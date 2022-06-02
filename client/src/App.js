@@ -5,6 +5,7 @@ import Login from './pages/Login/Login';
 import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
 import { createContext, useContext } from 'react';
 import auth from "./services/auth";
+import { SnackbarProvider } from 'notistack';
 
 const AuthContext = createContext();
 
@@ -26,21 +27,23 @@ function PrivateRoute({ children }) {
 
 function App() {
   return (
-    <ProvideAuth>
-      <Router>
-        <Switch>
-          <PrivateRoute exact path="/Home">
-            <Home />
-          </PrivateRoute>
-          <PrivateRoute exact path="/Setting">
-            <Setting />
-          </PrivateRoute>
-          <Route path="/login">
-            <Login />
-          </Route>
-        </Switch>
-      </Router>
-    </ProvideAuth>
+    <SnackbarProvider>
+      <ProvideAuth>
+        <Router>
+          <Switch>
+            <PrivateRoute exact path="/Home">
+              <Home />
+            </PrivateRoute>
+            <PrivateRoute exact path="/Setting">
+              <Setting />
+            </PrivateRoute>
+            <Route path="/login">
+              <Login />
+            </Route>
+          </Switch>
+        </Router>
+      </ProvideAuth>
+    </SnackbarProvider>
   );
 }
 
