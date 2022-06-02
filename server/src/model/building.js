@@ -5,10 +5,19 @@ const buildingSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    description: {
+        type: String
+    },
     sensor : {
         type: Array
     },
-    warningThreshold: {
+    warningThresholdGas: {
+        type: Number
+    },
+    warningThresholdCO: {
+        type: Number
+    },
+    warningThresholdHumidity: {
         type: Number
     }
 })

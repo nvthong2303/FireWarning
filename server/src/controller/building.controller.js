@@ -6,8 +6,11 @@ const addBuilding = async (req, res) => {
     await Building.findOneAndUpdate({
         buildingName: req.body.buildingName
     }, {
+        description: req.body.description,
         buildingName: req.body.buildingName,
-        warningThreshold: req.body.warningThreshold
+        warningThresholdGas: req.body.warningThresholdGas,
+        warningThresholdCO: req.body.warningThresholdCO,
+        warningThresholdHumidity: req.body.warningThresholdHumidity,
     }, {
         upsert: true
     })
@@ -19,8 +22,17 @@ const addSensor = async (req, res) => {
     return res.json(statusResponse.OK({ msg: 'add sensor building success' }));
 }
 
+const removeSensor = async (req, res) => {
+    await Building.findByIdAndUpdate(req.body.buildingID, { $pull: { sensor: req.body.sensorID }})
+    return res.json(statusResponse.OK({ msg: 'delete sensor building success' }));
+}
+
 const setThreshold = async (req, res) => {
-    await Building.findByIdAndUpdate(req.body.buildingID, { warningThreshold: req.body.warningThreshold })
+    await Building.findByIdAndUpdate(req.body.buildingID, { 
+        warningThresholdGas: req.body.warningThresholdGas,
+        warningThresholdCO: req.body.warningThresholdCO,
+        warningThresholdHumidity: req.body.warningThresholdHumidity,
+    })
     return res.json(statusResponse.OK({ msg: 'update building success' }));
 }
 
@@ -33,5 +45,6 @@ module.exports = {
     addBuilding,
     addSensor,
     setThreshold,
-    getListBuilding
+    getListBuilding,
+    removeSensor
 }

@@ -5,6 +5,11 @@ const sensorSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    typeSensor: {
+        type: String,
+        enum: ['Gas', 'CO', 'Humidity', 'Temperature', 'Other'],
+        default: 'Other'
+    },
     data : {
         type: Number,
         required: true

@@ -28,8 +28,11 @@ headers:
     x-access-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyODI5ZTc0Y2ZjN2QxYmY3YWI4NjhmMyIsInVzZXJuYW1lIjoidXNlcjAxIiwiaWF0IjoxNjUyNzI3NjY4fQ.uZazPjIN0tCRLjz9lrRQT1mrnFHnbicavFdnLlWDivw
 body: 
 {
-    "buildingName": "B1",
-    "warningThreshold": 1005
+    "buildingName": "A1",
+    "description": "tòa nhà quốc hội",
+    "warningThresholdGas": 1234,
+    "warningThresholdCO": 56,
+    "warningThresholdHumidity": 78
 }
 response: 
 {
@@ -54,16 +57,30 @@ response:
             {
                 "_id": "6282a421dffb825945deee61",
                 "buildingName": "B1",
-                "sensor": [],
+                "sensor": [
+                    "1357",
+                    "1359",
+                    "6294da56a0a99ac9b04f22bd"
+                ],
                 "__v": 0,
-                "warningThreshold": 1005
+                "warningThresholdGas": 4434,
+                "description": "Trụ sở chính của đại học Công Nghệ Thông Tin, trường đại học Bách Khoa Hà Nội",
+                "warningThresholdCO": 323,
+                "warningThresholdHumidity": 99
             },
             {
-                "_id": "6282a55956fe72fc50a0e4a4",
+                "_id": "6298c8b17e5ca571b6148d69",
                 "buildingName": "B2",
+                "sensor": [
+                    1357,
+                    1359,
+                    "6298cd3530be07cce9243006"
+                ],
                 "__v": 0,
-                "sensor": [],
-                "warningThreshold": 1004
+                "warningThresholdGas": 1069,
+                "description": "Trụ sở chính của đại học Cơ Khí, trường đại học Bách Khoa Hà Nội\t",
+                "warningThresholdCO": 900,
+                "warningThresholdHumidity": 900
             }
         ]
     }
@@ -77,7 +94,9 @@ headers:
 body:
 {
     "buildingID": "6282a421dffb825945deee61",
-    "warningThreshold": 1069
+    "warningThresholdGas": 1234,
+    "warningThresholdCO": 56,
+    "warningThresholdHumidity": 78
 }
 response: 
 {
@@ -107,7 +126,26 @@ response:
     }
 }
 
-6. API danh sách cảm biến
+6. API xóa sensor khỏi tòa nhà
+endpoint: /building/setting/deleteSensor
+method: post
+headers: 
+    x-access-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyODI5ZTc0Y2ZjN2QxYmY3YWI4NjhmMyIsInVzZXJuYW1lIjoidXNlcjAxIiwiaWF0IjoxNjUyNzI3NjY4fQ.uZazPjIN0tCRLjz9lrRQT1mrnFHnbicavFdnLlWDivw
+body:
+{
+    "buildingID": "6282a421dffb825945deee61",
+    "sensorID": 1359
+}
+response: 
+{
+    "code": 200,
+    "message": "OK",
+    "data": {
+        "msg": "delete sensor building success"
+    }
+}
+
+7. API danh sách cảm biến
 endpoint: /sensor/getListSensor
 method: get
 headers: 
@@ -138,7 +176,7 @@ response:
     }
 }
 
-7.API cập nhật sensor
+8.API cập nhật sensor
 endpoint: /sensor/updateData
 method: post
 headers: 
@@ -157,4 +195,29 @@ response:
     }
 }
 
-
+9.API lấy dữ liệu cảm biến
+endpoint: /sensor/getDataSensor
+method: post
+headers: 
+    x-access-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyODI5ZTc0Y2ZjN2QxYmY3YWI4NjhmMyIsInVzZXJuYW1lIjoidXNlcjAxIiwiaWF0IjoxNjUyNzI3NjY4fQ.uZazPjIN0tCRLjz9lrRQT1mrnFHnbicavFdnLlWDivw
+body:
+{
+    "sensorID": "6294da28a0a99ac9b04e269e"
+}
+response: 
+{
+    "code": 200,
+    "message": "OK",
+    "data": {
+        "sensor": {
+            "_id": "6294da28a0a99ac9b04e269e",
+            "name": "MQ5-2303",
+            "__v": 0,
+            "createdAt": "2022-05-30T14:52:25.101Z",
+            "data": 99,
+            "updatedAt": "2022-05-30T14:52:56.811Z",
+            "typeSensor": "Gas"
+        },
+        "msg": "update sensor success"
+    }
+}
