@@ -7,6 +7,8 @@ const userRoute = require('./src/router/user.router')
 const buildingRoute = require('./src/router/building.router')
 const sensorRoute = require('./src/router/sensor.router')
 
+const MQTT = require('./src/mqtt/mqtt');
+
 const app = express()
 const PORT = 3001;
 const MONGODB_URL = 'mongodb+srv://thong:thong@cluster0.vsp6k.mongodb.net/doankythuatmaytinh?retryWrites=true&w=majority'

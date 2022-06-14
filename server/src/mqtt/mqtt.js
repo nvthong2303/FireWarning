@@ -1,13 +1,14 @@
 const mqtt = require('mqtt');
 const { json } = require('body-parser');
+const { updateDataSensor } = require('../service/sensor');
 
-const option = {
+const options = {
     host: 'broker.hivemq.com',
     port: 1883,
     protocol: 'mqtt',
 }
 
-const client = mqtt.client.connect(options);
+const client = mqtt.connect(options);
 
 client.on('connect', () => {
     console.log('connect to hive mq broker success');
@@ -21,6 +22,7 @@ client.on('error', (err) => {
 client.on('message', (topic, msg) => {
     const data = JSON.parse(msg.toString());
     // handle data from broker
+    updateDataSensor(data)
 })
 
 const publish = (topic, data) => {
