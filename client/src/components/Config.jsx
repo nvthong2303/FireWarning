@@ -12,10 +12,10 @@ import {
     IconButton,
     Typography
 } from '@material-ui/core';
-import { getListBuilding } from '../apis/building/building';
 import DialogBuilding from './DialogBuilding';
 import DialogAddBuilding from './DialogAddBuilding';
-import { useSnackbar } from 'notistack';
+import { useSelector, useDispatch } from 'react-redux';
+import { requestGetListBuilding } from '../store/action/building.action';
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -69,34 +69,24 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Config() {
     const classes = useStyles();
-    const { enqueueSnackbar } = useSnackbar();
-
+    const dispatch = useDispatch()
     const [buildingSelected, setBuildingSelected] = useState();
     const [openDialogAction, setOpenDialogAction] = useState(false);
     const [openDialogAdd, setOpenDialogAdd] = useState(false);
-    const token = localStorage.getItem('x_access_token');
 
     const [reloadBuilding, setReloadBuilding] = useState(false);
-    const [listBuilding, setListBuilding] = useState([]);
+    const listBuilding = useSelector(state => state.buildingReducer.buildings) ?? [];
 
     useEffect(() => {
-        callListBuilding();
-    }, [reloadBuilding]);
+        dispatch(requestGetListBuilding());
+    }, [reloadBuilding])
+
 
     useEffect(() => {
-        if (listBuilding.length > 0) {
-            setBuildingSelected(listBuilding.find(a => a._id === buildingSelected?._id))
+        if (listBuilding?.length > 0) {
+            setBuildingSelected(listBuilding?.find(a => a._id === buildingSelected?._id))
         }
     }, [JSON.stringify(listBuilding)]);
-
-    const callListBuilding = async () => {
-        const response = await getListBuilding(token);
-        if (response.status === 200) {
-            setListBuilding(response.data.data.listBuilding)
-        } else {
-            enqueueSnackbar('failed', { variant: 'error' });
-        }
-    }
 
     const handleOpenDialogAction = () => {
         setOpenDialogAction(true);
@@ -190,7 +180,7 @@ export default function Config() {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {listBuilding.map((row, index) => (
+                            {listBuilding?.map((row, index) => (
                                 <TableRow key={index}>
                                     <TableCell width='5%' align="center">
                                         {index + 1}

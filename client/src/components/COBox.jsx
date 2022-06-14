@@ -4,6 +4,7 @@ import { getDataSensor } from '../apis/sensor/sensor';
 import { useSnackbar } from 'notistack';
 import { useSelector } from 'react-redux';
 import { Typography } from '@material-ui/core';
+import { GiPoisonCloud } from "react-icons/gi"
 
 export default function GasBox(props) {
     const { sensor } = props;
@@ -11,7 +12,7 @@ export default function GasBox(props) {
     const [data, setData] = React.useState([]);
     const token = localStorage.getItem('x_access_token');
     const buildingSelected = useSelector(state => state.buildingReducer.buildingSelected)
-    const threshold = buildingSelected?.warningThresholdGas;
+    const threshold = buildingSelected?.warningThresholdCO;
 
     React.useEffect(() => {
         callDetailSensor();
@@ -33,7 +34,7 @@ export default function GasBox(props) {
         <div className='mb-2' style={{ border: data > threshold ? '2px solid red' : '' }}>
             <div className="p-2 border rounded shadow">
                 <div style={{ display: 'flex', alignItem: 'center' }}>
-                    <BiGasPump 
+                    <GiPoisonCloud 
                         color={
                         data > threshold 
                             ? 'red' 
@@ -42,11 +43,11 @@ export default function GasBox(props) {
                         size={20} 
                         style={{ marginRight: '10px' }} 
                     />
-                    <h6>{`Nồng độ khí Gas ở ${sensor.name}`}</h6>
+                    <h6>{`Nồng độ khí CO ở ${sensor.name}`}</h6>
                 </div>
                 <Typography 
                     color={
-                        data > threshold 
+                        data > threshold
                         ? 'secondary' 
                         : 'primary'
                     } 

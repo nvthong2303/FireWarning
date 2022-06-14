@@ -13,6 +13,9 @@ import {
 import { useFormik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { addNewBuilding } from '../apis/building/building';
+import { requestGetListBuilding } from '../store/action/building.action';
+import { requestGetListSensor } from '../store/action/sensor.action';
+import { useDispatch } from 'react-redux';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -37,6 +40,7 @@ export default function DialogAddBuilding(props) {
     const token = localStorage.getItem('x_access_token');
     const isAdmin = localStorage.getItem('x_iot_isAdmin');
     const { enqueueSnackbar } = useSnackbar();
+    const dispatch = useDispatch();
 
     const formik = useFormik({
         enableReinitialize: true,
@@ -60,6 +64,8 @@ export default function DialogAddBuilding(props) {
         const response = await addNewBuilding(data, token);
         if (response.status === 200) {
             setReload();
+            dispatch(requestGetListBuilding(token));
+            dispatch(requestGetListSensor(token));
             handleCloseDialog();
         } else {
             enqueueSnackbar('failed', { variant: 'error' });

@@ -22,8 +22,10 @@ import {
     deleteSensorBuilding, 
     updateThresholdBuilding
 } from '../apis/building/building';
-import { getListSensors } from '../apis/sensor/sensor';
+import { useSelector, useDispatch } from 'react-redux';
 import { useSnackbar } from 'notistack';
+import { requestGetListBuilding } from '../store/action/building.action';
+import { requestGetListSensor } from '../store/action/sensor.action';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -49,21 +51,9 @@ export default function DialogBuilding(props) {
     const isAdmin = localStorage.getItem('x_iot_isAdmin');
 
     const classes = useStyles();
-    const [listSensors, setListSensors] = React.useState([]);
+    const listSensors = useSelector(state => state.sensorReducer.sensors)
     const { enqueueSnackbar } = useSnackbar();
-
-    React.useEffect(() => {
-        callListSensorss();
-    }, []);
-
-    const callListSensorss = async () => {
-        const response = await getListSensors(token);
-        if (response.status === 200) {
-            setListSensors(response.data.data.listSensors);
-        } else {
-            enqueueSnackbar('failed', { variant: 'error' });
-        }
-    }
+    const dispatch = useDispatch();
 
     const formik = useFormik({
         enableReinitialize: true,
@@ -79,25 +69,43 @@ export default function DialogBuilding(props) {
 
     const handleAddSensor = async (sensor) => {
         if (isAdmin !== 'true') {
-            enqueueSnackbar('bạn không có quyền', { variant: 'error' });
+            enqueueSnackbar('bạn không có quyền', 
+                { variant: 'error' }
+            );
             return;
         }
-        const response = await addSensorBuilding(buildingSelected, sensor, token);
+        const response = await addSensorBuilding(
+            buildingSelected, 
+            sensor, 
+            token
+        );
         if (response.status === 200) {
             setReload();
+            dispatch(requestGetListBuilding(token));
+            dispatch(requestGetListSensor(token));
         } else {
-            enqueueSnackbar('failed', { variant: 'error' });
+            enqueueSnackbar('failed', 
+                { variant: 'error' }
+            );
         }
     }
 
     const handleDeleteSensor = async (sensor) => {
         if (isAdmin !== 'true') {
-            enqueueSnackbar('bạn không có quyền', { variant: 'error' });
+            enqueueSnackbar('bạn không có quyền', 
+                { variant: 'error' }
+            );
             return;
         }
-        const response = await deleteSensorBuilding(buildingSelected, sensor, token);
+        const response = await deleteSensorBuilding(
+            buildingSelected, 
+            sensor, 
+            token
+        );
         if (response.status === 200) {
             setReload();
+            dispatch(requestGetListBuilding(token));
+            dispatch(requestGetListSensor(token));
         } else {
             enqueueSnackbar('failed', { variant: 'error' });
         }
@@ -105,10 +113,16 @@ export default function DialogBuilding(props) {
 
     const handleUpdataThreshold = async (data) => {
         if (isAdmin !== 'true') {
-            enqueueSnackbar('bạn không có quyền', { variant: 'error' });
+            enqueueSnackbar('bạn không có quyền', 
+                { variant: 'error' }
+            );
             return;
         }
-        const response = await updateThresholdBuilding(buildingSelected, data, token);
+        const response = await updateThresholdBuilding(
+            buildingSelected, 
+            data, 
+            token
+        );
         if (response.status === 200) {
             setReload();
             handleCloseDialog();
@@ -124,7 +138,9 @@ export default function DialogBuilding(props) {
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
         >
-            <DialogTitle id="alert-dialog-title">{`Cấu hình cho tòa nhà ${buildingSelected?.buildingName}`}</DialogTitle>
+            <DialogTitle id="alert-dialog-title">
+                {`Cấu hình cho tòa nhà ${buildingSelected?.buildingName}`}
+            </DialogTitle>
             <DialogContent>
                 <DialogContentText id="alert-dialog-description">
                     Cấu hình ngưỡng cảnh báo cho tòa nhà. Khi các chỉ số đo được từ các cảm biến
@@ -144,7 +160,12 @@ export default function DialogBuilding(props) {
                         label="ThresHold Gas"
                         type='number'
                         defaultValue={formik.values['warningThresholdGas']}
-                        onChange={(event) => formik.setFieldValue('warningThresholdGas', event.target.value)}
+                        onChange={(event) => 
+                            formik.setFieldValue(
+                                'warningThresholdGas', 
+                                event.target.value
+                            )
+                        }
                     />
                 </div>
                 <div className={classes.root} >
@@ -159,7 +180,12 @@ export default function DialogBuilding(props) {
                         label="ThresHold CO"
                         type='number'
                         defaultValue={formik.values['warningThresholdCO']}
-                        onChange={(event) => formik.setFieldValue('warningThresholdCO', event.target.value)}
+                        onChange={(event) => 
+                            formik.setFieldValue(
+                                'warningThresholdCO', 
+                                event.target.value
+                            )
+                        }
                     />
                 </div>
                 <div className={classes.root} >
@@ -174,7 +200,12 @@ export default function DialogBuilding(props) {
                         label="ThresHold Humidity"
                         type='number'
                         defaultValue={formik.values['warningThresholdHumidity']}
-                        onChange={(event) => formik.setFieldValue('warningThresholdHumidity', event.target.value)}
+                        onChange={(event) => 
+                            formik.setFieldValue(
+                                'warningThresholdHumidity', 
+                                event.target.value
+                            )
+                        }
                     />
                 </div>
                 <Divider />
@@ -183,7 +214,9 @@ export default function DialogBuilding(props) {
                 </DialogContentText>
                 <List>
                     {listSensors.map(sensor => {
-                        if (buildingSelected?.sensor?.includes(sensor._id)) {
+                        if (
+                            buildingSelected?.sensor?.includes(sensor._id)
+                        ) {
                             return (
                                 <ListItem>
                                     <ListItemText>
@@ -207,7 +240,10 @@ export default function DialogBuilding(props) {
                 </DialogContentText>
                 <List>
                     {listSensors.map(sensor => {
-                        if (!buildingSelected?.sensor?.includes(sensor._id)) {
+                        if (
+                            !buildingSelected?.sensor?.includes(sensor._id) &&
+                            sensor.used === false 
+                        ) {
                             return (
                                 <ListItem>
                                     <ListItemText>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { BiGasPump } from "react-icons/bi";
+import { WiHumidity } from "react-icons/wi";
 import { getDataSensor } from '../apis/sensor/sensor';
 import { useSnackbar } from 'notistack';
 import { useSelector } from 'react-redux';
@@ -10,8 +10,8 @@ export default function GasBox(props) {
     const { enqueueSnackbar } = useSnackbar();
     const [data, setData] = React.useState([]);
     const token = localStorage.getItem('x_access_token');
-    const buildingSelected = useSelector(state => state.buildingReducer.buildingSelected)
-    const threshold = buildingSelected?.warningThresholdGas;
+    const buildingSelected = useSelector(state => state.buildingReducer.buildingSelected);
+    const threshold = buildingSelected?.warningThresholdHumidity;
 
     React.useEffect(() => {
         callDetailSensor();
@@ -33,26 +33,26 @@ export default function GasBox(props) {
         <div className='mb-2' style={{ border: data > threshold ? '2px solid red' : '' }}>
             <div className="p-2 border rounded shadow">
                 <div style={{ display: 'flex', alignItem: 'center' }}>
-                    <BiGasPump 
+                    <WiHumidity 
                         color={
-                        data > threshold 
+                        data > threshold
                             ? 'red' 
                             : 'black'
                         } 
                         size={20} 
                         style={{ marginRight: '10px' }} 
                     />
-                    <h6>{`Nồng độ khí Gas ở ${sensor.name}`}</h6>
+                    <h6>{`Độ ẩm ở ${sensor.name}`}</h6>
                 </div>
                 <Typography 
                     color={
-                        data > threshold 
+                        data > threshold
                         ? 'secondary' 
                         : 'primary'
                     } 
                     variant='h6'
                 >
-                    {data} ppm
+                    {data} %
                 </Typography>
             </div>
         </div>

@@ -1,7 +1,10 @@
 import axios from 'axios';
 import { URL_API } from '../../common/constants';
 
-export async function getListBuilding(token) {
+const _token = localStorage.getItem('x_access_token');
+
+
+export async function getListBuilding(token = _token) {
     try {
         let config = {
             url: `${URL_API}/building/getListBuilding`,
@@ -48,7 +51,7 @@ export async function deleteSensorBuilding(building, sensor, token) {
         });
         let config = {
             url: `${URL_API}/building/setting/deleteSensor`,
-            method: 'post',
+            method: 'delete',
             headers: {
                 'x-access-token': token,
                 'Content-Type': 'application/json'

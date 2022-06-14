@@ -20,7 +20,7 @@ export async function getListSensors(token) {
 export async function getDataSensor(sensor, token) {
     try {
         let config = {
-            url: `${URL_API}/sensor/getDataSensor?id=${sensor._id}`,
+            url: `${URL_API}/sensor/getDataSensor/${sensor}`,
             method: 'get',
             headers: {
                 'x-access-token': token,
