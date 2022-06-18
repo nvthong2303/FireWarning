@@ -52,10 +52,10 @@ function HomeHeader() {
   const open = Boolean(anchorElMenuUser);
 
     function logout(){
-        localStorage.removeItem('x_acess_token');
+        localStorage.removeItem('x_access_token');
         localStorage.removeItem('x_iot_user');
         localStorage.removeItem('x_iot_isAdmin');
-        window.location = '/login';
+        window.location = '/Login';
     }
 
     const handleCloseMenuUser = () => setAnchorElMenuUser(null)

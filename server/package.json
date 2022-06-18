@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index.js"
+    "start": "nodemon index.js",
+    "start:all": "npm start && cd.. && cd client && npm start && cd.. && cd fakeData && npm start"
   },
   "author": "thong2303",
   "license": "ISC",

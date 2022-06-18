@@ -90,14 +90,14 @@ export default function PipeLine(props) {
     let { dataItems, onChange, style } = props;
     const classes = useStyles();
     const [value, setValue] = React.useState(0);
-    const [tabs, setTabs] = React.useState(dataItems)
+    const [tabs, setTabs] = React.useState([])
 
     React.useEffect(() => {
-        dataItems?.map(tab => {
-            const index = Math.floor(Math.random() * color.length);
-            tab.color = color[index];
-        })
-        setTabs(dataItems)
+            dataItems?.map(tab => {
+                const index = Math.floor(Math.random() * color.length);
+                tab.color = color[index];
+            })
+            setTabs(dataItems)
     }, [JSON.stringify(dataItems)]);
 
     const handleChange = (event, newValue) => {
@@ -105,7 +105,6 @@ export default function PipeLine(props) {
         let itemChecked = dataItems[newValue];
         onChange(itemChecked);
     };
-
 
     return (
         <Tabs

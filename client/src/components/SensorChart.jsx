@@ -48,7 +48,7 @@ function SensorChart(props) {
             loader={<div>Loading Chart</div>}
             data={data}
             options={{
-                title: 'Temperature Chart',
+                title: 'Đồ thị nhiệt độ theo thời gian',
                 hAxis: {
                     title: 'Thời gian',
                 },

@@ -220,7 +220,7 @@ export default function DialogBuilding(props) {
                             return (
                                 <ListItem>
                                     <ListItemText>
-                                        {sensor?.name}
+                                        {sensor?.name} - cảm biến loại: {sensor?.typeSensor}
                                     </ListItemText>
                                     <ListItemSecondaryAction>
                                         <IconButton onClick={() => {
@@ -247,7 +247,7 @@ export default function DialogBuilding(props) {
                             return (
                                 <ListItem>
                                     <ListItemText>
-                                        {sensor?.name}
+                                    {sensor?.name} - cảm biến loại: {sensor?.typeSensor}
                                     </ListItemText>
                                     <ListItemSecondaryAction>
                                         <IconButton onClick={() => {

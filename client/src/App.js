@@ -21,7 +21,7 @@ function ProvideAuth({ children }) {
 function PrivateRoute({ children }) {
   const auth = useContext(AuthContext);
   return (
-    <Route render={() => auth ? (children) : <Redirect to="/login" />} />
+    <Route render={() => auth ? (children) : <Redirect to="/Login" />} />
   );
 }
 
