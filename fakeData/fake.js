@@ -14,7 +14,7 @@ client.on('connect', () => {
     console.log('connected to mqtt broker');
 })
 
-client.subscribe('/topic/qos2303/warning');
+client.subscribe('/topic/qos2303/receive');
 
 client.on('error', (err) => {
     console.log(err)
@@ -84,6 +84,6 @@ setInterval(() => {
         dataTMP36_2303
     ]
     dataArray.map(data => {
-        client.publish('/iot/2303', JSON.stringify(data))
+        client.publish('/topic/qos2303/warning', JSON.stringify(data))
     })
 }, 5000)

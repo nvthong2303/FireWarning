@@ -24,9 +24,10 @@ client.on('message', (topic, message) => {
         const data = JSON.parse(message.toString())
         console.log(data);
     
-        if (data.data > 500) {
+        if (data.data > 300) {
             console.log('warninggggggggg//////////.......!!!!!!!')
             client.publish("/topic/qos2303/receive", "warningggggggggg......!!!!")
         }
     }
 })
+
